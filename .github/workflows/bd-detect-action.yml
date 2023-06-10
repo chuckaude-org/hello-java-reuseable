@@ -34,6 +34,7 @@ jobs:
         blackduck-api-token: ${{ secrets.BLACKDUCK_API_TOKEN }}
         detect-version: 8.9.0
         scan-mode: INTELLIGENT
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Black Duck PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       uses: synopsys-sig/detect-action@v0.3.4
