@@ -1,6 +1,6 @@
 # example workflow for Black Duck scans using the legacy Black Duck Action
 # https://github.com/blackducksoftware/github-action
-name: bd-detect-action
+name: bd-detect-legacy
 on:
   push:
     branches: [ main, master, develop, stage, release ]
