@@ -1,0 +1,34 @@
+# example workflow for Coverity on Polaris
+name: coverity-on-polaris
+on:
+  push:
+    branches: [ main, master, develop, stage, release ]
+  workflow_dispatch:
+jobs:
+  coverity-on-polaris:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: microsoft
+        cache: maven
+    - name: Polaris Scan
+      env:
+        POLARIS_SERVER_URL: ${{ vars.POLARIS_SERVER_URL }}
+        POLARIS_ACCESS_TOKEN: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+        POLARIS_PROJECT: chuckaude-${{ github.event.repository.name }}
+        POLARIS_ZIP: polaris_cli-linux64.zip
+      run: |
+        curl -fLOsS $POLARIS_SERVER_URL/api/tools/$POLARIS_ZIP
+        unzip -d $RUNNER_TEMP -jo $POLARIS_ZIP && rm -f $POLARIS_ZIP
+        $RUNNER_TEMP/polaris --co project.name=$POLARIS_PROJECT analyze -w
+#    - name: Save Logs
+#      if: always()
+#      uses: actions/upload-artifact@v3
+#      with:
+#        name: polaris-cli-logs
+#        path: ${{ github.workspace }}/.synopsys
