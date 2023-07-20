@@ -1,4 +1,4 @@
-# example workflow for Coverity scans (local analysis) using the Bridge CLI
+# example workflow for Coverity scans (local analysis with full client) using the Bridge CLI
 name: coverity-bridge-cli
 on:
   push:
@@ -23,22 +23,24 @@ jobs:
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
-            coverity.connect.url='https://coverity-aws.chuckaude.com' coverity.local=true \
+            coverity.connect.url=${{ vars.COVERITY_URL }}
             coverity.connect.user.name=${{ secrets.COV_USER }} \
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.ref_name }} \
+            coverity.local=true \
             coverity.connect.policy.view='Outstanding Issues'
     - name: Coverity PR Scan
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         curl -fLsS -o bridge.zip ${{ vars.BRIDGECLI_LINUX64 }} && unzip -qo -d $RUNNER_TEMP bridge.zip && rm -f bridge.zip
         $RUNNER_TEMP/synopsys-bridge --verbose --stage connect \
-            coverity.connect.url='https://coverity-aws.chuckaude.com' coverity.local=true \
+            coverity.connect.url=${{ vars.COVERITY_URL }}
             coverity.connect.user.name=${{ secrets.COV_USER }} \
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.base_ref }} \
+            coverity.local=true \
             coverity.automation.prcomment=true \
             github.repository.branch.name=${{ github.ref_name }} \
             github.repository.name=${{ github.event.repository.name }} \
