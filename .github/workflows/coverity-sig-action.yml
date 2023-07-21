@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BRIDGE_COVERITY_LOCAL: true
-      BRIDGE_COVERITY_INSTALL_DIRECTORY: /opt/coverity/analysis/2023.6.0
+      # uncomment for a preinstalled analysis toolkit
+      #BRIDGE_COVERITY_INSTALL_DIRECTORY: /opt/coverity/analysis/2023.6.0
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3

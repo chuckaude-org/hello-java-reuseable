@@ -9,6 +9,10 @@ on:
 jobs:
   coverity:
     runs-on: ubuntu-latest
+    env:
+      BRIDGE_COVERITY_LOCAL: true
+      # uncomment for a preinstalled analysis toolkit
+      #BRIDGE_COVERITY_INSTALL_DIRECTORY: /opt/coverity/analysis/2023.6.0
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
@@ -28,7 +32,6 @@ jobs:
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.ref_name }} \
-            coverity.local=true \
             coverity.connect.policy.view='Outstanding Issues'
     - name: Coverity PR Scan
       if: ${{ github.event_name == 'pull_request' }}
@@ -40,7 +43,6 @@ jobs:
             coverity.connect.user.password=${{ secrets.COVERITY_PASSPHRASE }} \
             coverity.connect.project.name=${{ github.event.repository.name }} \
             coverity.connect.stream.name=${{ github.event.repository.name }}-${{ github.base_ref }} \
-            coverity.local=true \
             coverity.automation.prcomment=true \
             github.repository.branch.name=${{ github.ref_name }} \
             github.repository.name=${{ github.event.repository.name }} \
