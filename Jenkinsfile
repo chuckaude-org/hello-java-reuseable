@@ -15,7 +15,6 @@ pipeline {
 	// Coverity Connect server
 	CONNECT = 'https://poc329.coverity.synopsys.com'
         COVERITY_TOOL_HOME = "$JENKINS_HOME/tools/cov-analysis-linux64-2023.3.2"
-        COVERITY_NO_LOG_ENVIRONMENT_VARIABLES = '1'
     }
     tools {
         maven 'maven-3.9'
@@ -99,11 +98,11 @@ pipeline {
                         withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
                             script {
                                 status = sh returnStatus: true, script: """
-                                    export CHANGE_SET=\$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
-                                    [ -z "$CHANGE_SET" ] && exit 0
-                                    cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --build $BLDCMD
+				    export FILELIST=\$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
+                                    env | sort
+                                    cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --build mvn -B -DskipTests package
                                     cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --present-in-reference false \
-                                        --ignore-uncapturable-inputs true --text-output issues.txt $CHANGE_SET
+                                        --ignore-uncapturable-inputs true --text-output issues.txt $FILELIST
                                     if [ -s issues.txt ]; then cat issues.txt; exit 3; fi
                                 """
                                 if (status == 3) { unstable 'New Issues Detected' }
@@ -117,7 +116,7 @@ pipeline {
         stage('Deploy') {
             when { environment name: 'PRODUCTION', value: 'true' }
             steps {
-                sh 'mvn -B -DskipTests install'
+                sh 'mvn -B install'
             }
         }
     }
