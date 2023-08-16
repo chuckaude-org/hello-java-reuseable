@@ -13,8 +13,10 @@ pipeline {
         PROJECT = sh(script: "basename $GIT_URL .git", returnStdout: true).trim()
         // Coverity Connect server
         CONNECT = 'https://poc329.coverity.synopsys.com'
-		BRIDGE_COVERITY_LOCAL = 'true'
-		BRIDGE_COVERITY_INSTALL_DIRECTORY = '/opt/coverity/analysis/2023.6.1'
+        // Bridge CLI download URL
+        BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
+        BRIDGE_COVERITY_LOCAL = 'true'
+        BRIDGE_COVERITY_INSTALL_DIRECTORY = '/opt/coverity/analysis/2023.6.1'
     }
     stages {
         stage('Build') {
