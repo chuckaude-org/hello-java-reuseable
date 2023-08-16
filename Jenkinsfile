@@ -16,7 +16,7 @@ pipeline {
         // Bridge CLI download URL
         BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
         BRIDGE_COVERITY_LOCAL = 'true'
-        BRIDGE_COVERITY_INSTALL_DIRECTORY = '$JENKINS_HOME/tools/cov-analysis-linux64-2023.3.2'
+        BRIDGE_COVERITY_INSTALL_DIRECTORY = "$JENKINS_HOME/tools/cov-analysis-linux64-2023.3.2"
     }
     stages {
         stage('Build') {
