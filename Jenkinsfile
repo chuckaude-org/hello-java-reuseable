@@ -48,7 +48,7 @@ pipeline {
         stage('Coverity PR Scan') {
                 when { environment name: 'PRSCAN', value: 'true' }
                 steps {
-                withCredentials([usernamePassword(credentialsId: 'poc329.coverity.synopsys.com', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE')]) {
+                withCredentials([usernamePassword(credentialsId: 'poc329.coverity.synopsys.com', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE'),string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
                     script {
                         status = sh returnStatus: true, script: """
                             curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
@@ -61,7 +61,7 @@ pipeline {
                                 coverity.automation.prcomment='true' \
                                 github.repository.name=$PROJECT \
                                 github.repository.branch.name=$BRANCH_NAME \
-                                github.repository.owner.name=$CHANGE_AUTHOR \
+                                github.repository.owner.name=chuckaude-org \
                                 github.repository.pull.number=$CHANGE_ID \
                                 github.user.token=$GITHUB_TOKEN
                         """
