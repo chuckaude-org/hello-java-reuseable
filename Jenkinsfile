@@ -82,7 +82,7 @@ pipeline {
                         withCoverityEnvironment(coverityInstanceUrl: "$CONNECT", projectName: "$PROJECT", streamName: "$PROJECT-$CHANGE_TARGET") {
                             script {
                                 status = sh returnStatus: true, script: """
-                                    coverity scan -o analyze.location=connect -o commit.connect.url=$COV_URL -o commit.connect.stream=$COV_STREAM -o commit.connect.comparison-report=comparison-report.json
+                                    coverity scan -o commit.connect.url=$COV_URL -o commit.connect.project=$COV_PROJECT -o commit.connect.stream=$COV_STREAM -o commit.connect.comparison-report=comparison-report.json
                                     cat comparison-report.json | jq '.issues[] | select(.presentInReferenceSnapshot == false and (.impact == "Medium" or .impact == "High"))' > new-issues.json
                                     if [ -s new-issues.json ]; then cat new-issues.json | jq; exit 3; fi
                                 """
@@ -101,8 +101,7 @@ pipeline {
 				    export FILELIST=\$(git --no-pager diff origin/$CHANGE_TARGET --name-only)
                                     env | sort
                                     cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --build mvn -B -DskipTests package
-                                    cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --present-in-reference false \
-                                        --ignore-uncapturable-inputs true --text-output issues.txt $FILELIST
+                                    cov-run-desktop --dir idir --url $COV_URL --stream $COV_STREAM --present-in-reference false --ignore-uncapturable-inputs true --text-output issues.txt $FILELIST
                                     if [ -s issues.txt ]; then cat issues.txt; exit 3; fi
                                 """
                                 if (status == 3) { unstable 'New Issues Detected' }
