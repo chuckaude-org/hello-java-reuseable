@@ -34,7 +34,7 @@ pipeline {
                             $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
                                 coverity.connect.url=$CONNECT \
                                 coverity.connect.user.name=$COV_USER \
-                                coverity.connect.user.password=$COVERITY \
+                                coverity.connect.user.password=$COVERITY_PASSPHRASE \
                                 coverity.connect.project.name=$PROJECT \
                                 coverity.connect.stream.name=$PROJECT-$BRANCH_NAME \
                                 coverity.connect.policy.view="Outstanding Issues"
@@ -55,7 +55,7 @@ pipeline {
                             $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
                                 coverity.connect.url=$CONNECT \
                                 coverity.connect.user.name=$COV_USER \
-                                coverity.connect.user.password=$COVERITY \
+                                coverity.connect.user.password=$COVERITY_PASSPHRASE \
                                 coverity.connect.project.name=$PROJECT \
                                 coverity.connect.stream.name=$PROJECT-$CHANGE_TARGET \
                                 coverity.automation.prcomment='true' \
