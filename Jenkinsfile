@@ -37,7 +37,7 @@ pipeline {
                                 coverity.connect.user.password=$COVERITY_PASSPHRASE \
                                 coverity.connect.project.name=$PROJECT \
                                 coverity.connect.stream.name=$PROJECT-$BRANCH_NAME \
-                                coverity.connect.policy.view="Outstanding Issues"
+                                coverity.connect.policy.view='Outstanding Issues'
                         """
                         if (status == 8) { unstable 'policy violation' }
                         else if (status != 0) { error 'scan failure' }
@@ -74,7 +74,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'idir/build-log.txt, idir/output/analysis-log.txt'
+            //zip archive: true, dir: '.bridge', zipFile: 'bridge-logs.zip'
             cleanWs()
         }
     }
