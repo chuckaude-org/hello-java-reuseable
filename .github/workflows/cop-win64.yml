@@ -24,7 +24,7 @@ jobs:
         Invoke-WebRequest -Uri ${{ vars.POLARIS_SERVER_URL }}/api/tools/polaris_cli-win64.zip -OutFile polaris.zip
         Expand-Archive -Path polaris.zip -DestinationPath ${{ runner.temp }} -Force
         Remove-Item -Path polaris.zip -Force
-        ${{ runner.temp }}/polaris_cli-win64-2023.6.0/bin/polaris --co project.name=chuckaude-${{ github.event.repository.name }} analyze -w
+        ${{ runner.temp }}/*/bin/polaris.exe --co project.name=chuckaude-${{ github.event.repository.name }} analyze -w
 #    - name: Save Logs
 #      if: always()
 #      uses: actions/upload-artifact@v3
