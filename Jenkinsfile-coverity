@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'maven-3.9'
-        jdk 'openjdk-11'
+        jdk 'openjdk-17'
     }
     environment {
         // full scan on pushes to important branches
@@ -15,8 +15,9 @@ pipeline {
         CONNECT = 'https://poc329.coverity.synopsys.com'
         // Bridge CLI download URL
         BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
-        BRIDGE_COVERITY_LOCAL = 'true'
-        BRIDGE_COVERITY_INSTALL_DIRECTORY = "$JENKINS_HOME/tools/cov-analysis-linux64-2023.3.2"
+        // uncomment for local analysis using the full client
+        //BRIDGE_COVERITY_LOCAL = 'true'
+        //BRIDGE_COVERITY_INSTALL_DIRECTORY = "$JENKINS_HOME/tools/cov-analysis-linux64-2023.3.2"
     }
     stages {
         stage('Build') {
