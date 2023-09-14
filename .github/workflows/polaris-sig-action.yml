@@ -19,8 +19,7 @@ jobs:
         java-version: 17
         distribution: microsoft
         cache: maven
-    - name: Polaris Full Scan
-      if: ${{ github.event_name != 'pull_request' }}
+    - name: Polaris Scan
       uses: synopsys-sig/synopsys-action@v1.4.0
       with:
         polaris_serverUrl: ${{ vars.POLARIS_SERVERURL }}
@@ -28,16 +27,7 @@ jobs:
         polaris_application_name: chuckaude-${{ github.event.repository.name }}
         polaris_project_name: ${{ github.event.repository.name }}
         polaris_assessment_types: "SAST,SCA"
-    - name: Polaris PR Scan
-      if: ${{ github.event_name == 'pull_request' }}
-      uses: synopsys-sig/synopsys-action@v1.4.0
-      with:
-        polaris_serverUrl: ${{ vars.POLARIS_SERVERURL }}
-        polaris_accessToken: ${{ secrets.POLARIS_ACCESSTOKEN }}
-        polaris_application_name: chuckaude-${{ github.event.repository.name }}
-        polaris_project_name: ${{ github.event.repository.name }}
-        polaris_assessment_types: "SAST,SCA"
-        bridge_polaris_prComment_enabled: true
+        bridge_polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
 #    - name: Save Logs
 #      if: always()
