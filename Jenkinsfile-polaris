@@ -1,5 +1,3 @@
-def PROJECT_NAME = 'hello-java'
-
 pipeline {
     agent any
     tools {
@@ -7,10 +5,11 @@ pipeline {
         jdk 'openjdk-17'
     }
     environment {
+        REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
         BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
         BRIDGE_POLARIS_SERVERURL = 'https://poc.polaris.synopsys.com'
-        BRIDGE_POLARIS_APPLICATION_NAME = "chuckaude-$PROJECT_NAME"
-        BRIDGE_POLARIS_PROJECT_NAME = "$PROJECT_NAME"
+        BRIDGE_POLARIS_APPLICATION_NAME = "chuckaude-${env.REPO_NAME}"
+        BRIDGE_POLARIS_PROJECT_NAME = "${env.REPO_NAME}"
         BRIDGE_POLARIS_ASSESSMENT_TYPES = 'SAST,SCA'
     }
     stages {
@@ -48,7 +47,7 @@ pipeline {
                                 polaris.prcomment.enabled=true \
                                 polaris.branch.name=$BRANCH_NAME \
                                 polaris.branch.parent.name=$CHANGE_TARGET \
-                                github.repository.name=$PROJECT_NAME \
+                                github.repository.name=$REPO_NAME \
                                 github.repository.branch.name=$BRANCH_NAME \
                                 github.repository.owner.name=chuckaude-org \
                                 github.repository.pull.number=$CHANGE_ID \

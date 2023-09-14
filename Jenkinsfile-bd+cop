@@ -10,8 +10,8 @@ pipeline {
         FULLSCAN = "${env.BRANCH_NAME ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
         // PR scan on pulll requests to important branches
         PRSCAN = "${env.CHANGE_TARGET ==~ /^(main|master|develop|stage|release)$/ ? 'true' : 'false'}"
-        // set project name to be repo name
-        PROJECT = sh(script: "basename $GIT_URL .git", returnStdout: true).trim()
+        // extract REPO_NAME from GIT_URL
+        REPO_NAME = "${env.GIT_URL.tokenize('/.')[-2]}"
         // Bridge CLI download URL
         BRIDGECLI_LINUX64 = 'https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-bridge/latest/synopsys-bridge-linux64.zip'
     }
@@ -35,9 +35,9 @@ pipeline {
                 stage('Black Duck Full Scan') {
                     when { environment name: 'FULLSCAN', value: 'true' }
                     environment {
-                        DETECT_PROJECT_NAME = "$PROJECT"
+                        DETECT_PROJECT_NAME = "$REPO_NAME"
                         DETECT_PROJECT_VERSION_NAME = "$BRANCH_NAME"
-                        DETECT_CODE_LOCATION_NAME = "$PROJECT-$BRANCH_NAME"
+                        DETECT_CODE_LOCATION_NAME = "$REPO_NAME-$BRANCH_NAME"
                         DETECT_RISK_REPORT_PDF = "${env.PRODUCTION == 'true' ? 'true' : 'false'}"
                         DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
                     }
@@ -61,9 +61,9 @@ pipeline {
                     // Bridge CLI PR comments currently not supported from Jenkins - see INTEGRATE-23
                     when { environment name: 'PRSCAN', value: 'true' }
                     environment {
-                        DETECT_PROJECT_NAME = "$PROJECT"
+                        DETECT_PROJECT_NAME = "$REPO_NAME"
                         DETECT_PROJECT_VERSION_NAME = "$CHANGE_TARGET"
-                        DETECT_CODE_LOCATION_NAME = "$PROJECT-$CHANGE_TARGET"
+                        DETECT_CODE_LOCATION_NAME = "$REPO_NAME-$CHANGE_TARGET"
                         DETECT_EXCLUDED_DETECTOR_TYPES = 'GIT'
                         BRIDGE_ENVIRONMENT_SCAN_PULL = 'true'
                     }
@@ -78,7 +78,7 @@ pipeline {
                                         blackduck.scan.full='false' \
                                         blackduck.automation.prcomment='true' \
                                         github.repository.branch.name=$BRANCH_NAME \
-                                        github.repository.name=$PROJECT \
+                                        github.repository.name=$REPO_NAME \
                                         github.repository.owner.name=$CHANGE_AUTHOR \
                                         github.repository.pull.number=$CHANGE_ID \
                                         github.user.token=$GITHUB_TOKEN
@@ -97,7 +97,7 @@ pipeline {
                                 status = sh returnStatus: true, script: """
                                     curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
                                     unzip -qo -d $WORKSPACE_TMP -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-                                    $WORKSPACE_TMP/polaris --co project.name=$PROJECT analyze -w
+                                    $WORKSPACE_TMP/polaris --co project.name=$REPO_NAME analyze -w
                                     # simple quality gate for critical and high impact issues; more advanced filtering requires an API script
                                     if [ \$(cat .synopsys/polaris/cli-scan.json | jq '[.issueSummary.issuesBySeverity|.critical,.high]|add') -ne 0 ]; then exit 8; fi
                                 """
@@ -115,7 +115,7 @@ pipeline {
                                 status = sh returnStatus: true, script: """
                                     curl -fLOsS $POLARIS_SERVER_URL/api/tools/polaris_cli-linux64.zip
                                     unzip -qo -d $WORKSPACE_TMP -jo polaris_cli-linux64.zip && rm -f polaris_cli-linux64.zip
-                                    $WORKSPACE_TMP/polaris --co project.name=$PROJECT analyze -w
+                                    $WORKSPACE_TMP/polaris --co project.name=$REPO_NAME analyze -w
                                     # query for new issues; will always be non-zero for PRs; replace with API script to compare with CHANGE_TARGET
                                     if [ \$(cat .synopsys/polaris/cli-scan.json | jq '.issueSummary.newIssues') -ne 0 ]; then exit 8; fi
                                 """
