@@ -27,7 +27,7 @@ jobs:
         polaris_application_name: chuckaude-${{ github.event.repository.name }}
         polaris_project_name: ${{ github.event.repository.name }}
         polaris_assessment_types: "SAST,SCA"
-        polaris_prcomment_enabled: true
+        bridge_polaris_prComment_enabled: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
 #    - name: Save Logs
 #      if: always()
