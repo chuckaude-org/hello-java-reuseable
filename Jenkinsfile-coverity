@@ -29,7 +29,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'poc329.coverity.synopsys.com', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE')]) {
                     script {
-                        status = sh returnStatus: true, script: """
+                        status = sh returnStatus: true, script: '''
                             curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
                             $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
                                 coverity.connect.url=$CONNECT \
@@ -38,7 +38,7 @@ pipeline {
                                 coverity.connect.project.name=$PROJECT \
                                 coverity.connect.stream.name=$PROJECT-$BRANCH_NAME \
                                 coverity.connect.policy.view='Outstanding Issues'
-                        """
+                        '''
                         if (status == 8) { unstable 'policy violation' }
                         else if (status != 0) { error 'scan failure' }
                     }
@@ -50,7 +50,7 @@ pipeline {
                 steps {
                 withCredentials([usernamePassword(credentialsId: 'poc329.coverity.synopsys.com', usernameVariable: 'COV_USER', passwordVariable: 'COVERITY_PASSPHRASE'),string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
                     script {
-                        status = sh returnStatus: true, script: """
+                        status = sh returnStatus: true, script: '''
                             curl -fLsS -o bridge.zip $BRIDGECLI_LINUX64 && unzip -qo -d $WORKSPACE_TMP bridge.zip && rm -f bridge.zip
                             $WORKSPACE_TMP/synopsys-bridge --verbose --stage connect \
                                 coverity.connect.url=$CONNECT \
@@ -64,7 +64,7 @@ pipeline {
                                 github.repository.owner.name=chuckaude-org \
                                 github.repository.pull.number=$CHANGE_ID \
                                 github.user.token=$GITHUB_TOKEN
-                        """
+                        '''
                         if (status == 8) { unstable 'policy violation' }
                         else if (status != 0) { error 'scan failure' }
                     }
