@@ -3,6 +3,8 @@ name: polaris-bridge-cli
 on:
   push:
     branches: [ main, master, develop, stage, release ]
+  pull_request:
+    branches: [ main, master, develop, stage, release ]
   workflow_dispatch:
 jobs:
   polaris:
