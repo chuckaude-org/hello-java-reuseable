@@ -28,7 +28,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
 
   security:
-    uses: chuckaude-org/security-workflow/blob/main/.github/workflows/synopsys.yaml@main
+    uses: chuckaude-org/security-workflow/.github/workflows/synopsys.yaml@main
     with:
       application: chuckaude-hello-java
     secrets:
