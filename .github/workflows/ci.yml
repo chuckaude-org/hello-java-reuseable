@@ -1,0 +1,33 @@
+# example workflow
+name: CI
+
+on:
+  push:
+    branches: [ main, develop, stage, release ]
+  pull_request:
+    branches: [ main, develop, stage, release ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: microsoft
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: Publish to GitHub Packages Apache Maven
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
